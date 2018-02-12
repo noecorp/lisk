@@ -109,41 +109,21 @@ __private.removePeer = function(options, extraMessage) {
  * @private
  * @implements {library.schema.validate}
  * @implements {__private.receiveSignature}
- * @param {Object} query
+ * @param {Array} signatures A list of signature objects
  * @param {function} cb
  * @return {setImmediateCallback} cb, err
  */
-__private.receiveSignatures = function(query, cb) {
-	var signatures;
+__private.receiveSignatures = function(signatures, cb) {
+	async.eachSeries(
+		signatures,
+		(signature, eachSeriesCb) => {
+			__private.receiveSignature(signature, err => {
+				if (err) {
+					library.logger.debug(err, signature);
+				}
 
-	async.series(
-		{
-			validateSchema: function(seriesCb) {
-				library.schema.validate(query, definitions.WSSignaturesList, err => {
-					if (err) {
-						return setImmediate(seriesCb, 'Invalid signatures body');
-					} else {
-						return setImmediate(seriesCb);
-					}
-				});
-			},
-			receiveSignatures: function(seriesCb) {
-				signatures = query.signatures;
-
-				async.eachSeries(
-					signatures,
-					(signature, eachSeriesCb) => {
-						__private.receiveSignature(signature, err => {
-							if (err) {
-								library.logger.debug(err, signature);
-							}
-
-							return setImmediate(eachSeriesCb);
-						});
-					},
-					seriesCb
-				);
-			},
+				return setImmediate(eachSeriesCb);
+			});
 		},
 		err => setImmediate(cb, err)
 	);
@@ -181,45 +161,26 @@ __private.receiveSignature = function(query, cb) {
  * @private
  * @implements {library.schema.validate}
  * @implements {__private.receiveTransaction}
- * @param {Object} query - Contains transactions
+ * @param {Array} transactions - List of transactions
  * @param {peer} peer
  * @param {string} extraLogMessage
  * @param {function} cb
  * @return {setImmediateCallback} cb, err
  */
-__private.receiveTransactions = function(query, peer, extraLogMessage, cb) {
-	var transactions;
+__private.receiveTransactions = function(transactions, peer, extraLogMessage, cb) {
 
-	async.series(
-		{
-			validateSchema: function(seriesCb) {
-				library.schema.validate(query, definitions.WSTransactionsRequest, err => {
-					if (err) {
-						return setImmediate(seriesCb, 'Invalid transactions body');
-					} else {
-						return setImmediate(seriesCb);
-					}
-				});
-			},
-			receiveTransactions: function(seriesCb) {
-				transactions = query.transactions;
-
-				async.eachSeries(
-					transactions,
-					(transaction, eachSeriesCb) => {
-						if (transaction) {
-							transaction.bundled = true;
-						}
-						__private.receiveTransaction(transaction, peer, extraLogMessage, err => {
-							if (err) {
-								library.logger.debug(err, transaction);
-							}
-							return setImmediate(eachSeriesCb);
-						});
-					},
-					seriesCb
-				);
-			},
+	async.eachSeries(
+		transactions,
+		(transaction, eachSeriesCb) => {
+			if (transaction) {
+				transaction.bundled = true;
+			}
+			__private.receiveTransaction(transaction, peer, extraLogMessage, err => {
+				if (err) {
+					library.logger.debug(err, transaction);
+				}
+				return setImmediate(eachSeriesCb);
+			});
 		},
 		err => setImmediate(cb, err)
 	);
@@ -614,12 +575,17 @@ Transport.prototype.shared = {
 	},
 
 	postSignatures: function(query, cb) {
-		__private.receiveSignatures(query, err => {
+		library.schema.validate(query, definitions.WSSignaturesList, err => {
 			if (err) {
-				return setImmediate(cb, null, { success: false, message: err });
-			} else {
-				return setImmediate(cb, null, { success: true });
+				return setImmediate(cb, null, { success: false, message: 'Invalid signatures body' });
 			}
+			__private.receiveSignatures(query.signatures, err => {
+				if (err) {
+					return setImmediate(cb, null, { success: false, message: err });
+				} else {
+					return setImmediate(cb, null, { success: true });
+				}
+			});
 		});
 	},
 
@@ -675,17 +641,22 @@ Transport.prototype.shared = {
 	},
 
 	postTransactions: function(query, cb) {
-		__private.receiveTransactions(
-			query,
-			query.peer,
-			query.extraLogMessage,
-			err => {
-				if (err) {
-					return setImmediate(cb, null, { success: false, message: err });
-				}
-				return setImmediate(cb, null, { success: true });
+		library.schema.validate(query, definitions.WSTransactionsRequest, err => {
+			if (err) {
+				return setImmediate(cb, null, { success: false, message: 'Invalid transactions body' });
 			}
-		);
+			__private.receiveTransactions(
+				query.transactions,
+				query.peer,
+				query.extraLogMessage,
+				err => {
+					if (err) {
+						return setImmediate(cb, null, { success: false, message: err });
+					}
+					return setImmediate(cb, null, { success: true });
+				}
+			);
+		});
 	},
 };
 

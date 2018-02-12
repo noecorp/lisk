@@ -57,8 +57,9 @@ var middleware = {
 			return next();
 		}
 		if (err.status === 400 && err.name === 'SyntaxError') {
-			logger.error(`API parse error ${req.url}`, err.message);
-			console.trace(err);
+			// Express JSON body-parser throws an error with status === 400 if the
+			// payload cannot be parsed to valid JSON, in this case we want to send
+			// a response with status code 400.
 			res
 			.status(400)
 			.send({

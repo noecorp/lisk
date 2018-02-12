@@ -111,7 +111,7 @@ TransactionsController.getTransactions = function(context, next) {
  * @todo: Add description of the function and its parameters
  */
 TransactionsController.postTransaction = function(context, next) {
-	var transaction = context.request.swagger.params.transaction.value;
+	var transaction = context.request.body;
 
 	modules.transactions.shared.postTransaction(transaction, (err, data) => {
 		if (err) {

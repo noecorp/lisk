@@ -31,7 +31,7 @@ var sendTransactionPromise = apiHelpers.sendTransactionPromise;
 var errorCodes = require('../../../../helpers/api_codes');
 
 // TODO: Fix tests
-describe.skip('POST /api/transactions (type 3) votes', () => {
+describe('POST /api/transactions (type 3) votes', () => {
 	var transaction;
 	var transactionsToWaitFor = [];
 	var badTransactions = [];

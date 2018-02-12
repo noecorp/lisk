@@ -40,7 +40,7 @@ function SignaturesController(scope) {
  * @todo: Add description of the function and its parameters
  */
 SignaturesController.postSignature = function(context, next) {
-	var signature = context.request.swagger.params.signature.value; // TODO 2 check
+	var signature = context.request.body;
 
 	modules.signatures.shared.postSignature(signature, (err, data) => {
 		if (err) {
