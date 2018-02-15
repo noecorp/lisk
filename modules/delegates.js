@@ -690,7 +690,7 @@ Delegates.prototype.validateBlockSlotAgainstPreviousRound = function(
 
 /**
  * Gets a list of delegates:
- * - Calculating individual rate, rank, approval, productivity.
+ * - Calculating individual rank, approval, productivity.
  * - Sorting based on query parameter.
  * @param {Object} query
  * @param {function} cb - Callback function.

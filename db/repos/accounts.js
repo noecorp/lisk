@@ -30,7 +30,7 @@ const normalFields = [
 	{ name: 'u_secondSignature', cast: 'int::boolean', skip: ifNotExists },
 	{ name: 'balance', cast: 'bigint', def: '0', skip: ifNotExists },
 	{ name: 'u_balance', cast: 'bigint', def: '0', skip: ifNotExists },
-	{ name: 'rate', cast: 'bigint', def: '0', skip: ifNotExists },
+	{ name: 'rank', cast: 'bigint', def: null, skip: ifNotExists },
 	{ name: 'multimin', def: 0, skip: ifNotExists },
 	{ name: 'u_multimin', def: 0, skip: ifNotExists },
 	{ name: 'multilifetime', def: 0, skip: ifNotExists },
@@ -67,7 +67,6 @@ const immutableFields = [
 
 // Only used in SELECT queries
 const dynamicFields = [
-	{ name: 'rank', init: () => sql.columnRank },
 	{ name: 'delegates', init: () => sql.columnDelegates },
 	{ name: 'u_delegates', init: () => sql.columnUDelegates },
 	{ name: 'multisignatures', init: () => sql.columnMultisignatures },

@@ -496,7 +496,7 @@ class Account {
 						);
 						break;
 
-					// [u_]balance, [u_]multimin, [u_]multilifetime, rate, fees, rank, rewards, votes, producedBlocks, missedBlocks
+					// [u_]balance, [u_]multimin, [u_]multilifetime, fees, rank, rewards, votes, producedBlocks, missedBlocks
 					case Number:
 						if (isNaN(updatedValue) || updatedValue === Infinity) {
 							throw `Encountered insane number: ${updatedValue}`;
@@ -639,7 +639,7 @@ class Account {
  * @property {number} balance - Between 0 and totalAmount from constants
  * @property {number} u_balance - Between 0 and totalAmount from constants
  * @property {number} vote
- * @property {number} rate
+ * @property {number} rank
  * @property {String[]} delegates - From mem_account2delegates table, filtered by address
  * @property {String[]} u_delegates - From mem_account2u_delegates table, filtered by address
  * @property {String[]} multisignatures - From mem_account2multisignatures table, filtered by address
@@ -718,11 +718,6 @@ Account.prototype.model = [
 	},
 	{
 		name: 'u_balance',
-		type: 'BigInt',
-		conv: Number,
-	},
-	{
-		name: 'rate',
 		type: 'BigInt',
 		conv: Number,
 	},
@@ -896,9 +891,6 @@ Account.prototype.schema = {
 			type: 'integer',
 			minimum: 0,
 			maximum: constants.totalAmount,
-		},
-		rate: {
-			type: 'integer',
 		},
 		delegates: {
 			anyOf: [

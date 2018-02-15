@@ -36,7 +36,7 @@ var MemAccounts = {
 		'"balance",' +
 		'"u_balance",' +
 		'"vote",' +
-		'"rate",' +
+		'"rank",' +
 		'"delegates",' +
 		'"u_delegates",' +
 		'"multisignatures",' +
@@ -66,7 +66,7 @@ var MemAccounts = {
 		'${balance}, ' +
 		'${u_balance}, ' +
 		'${vote}, ' +
-		'${rate}, ' +
+		'${rank}, ' +
 		'${delegates}, ' +
 		'${u_delegates}, ' +
 		'${multisignatures}, ' +

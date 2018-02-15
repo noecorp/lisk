@@ -42,7 +42,6 @@ module.exports = {
 		columnUDelegates: link('accounts/column_u_delegates.sql'),
 		columnMultisignatures: link('accounts/column_multisignatures.sql'),
 		columnUMultisignatures: link('accounts/column_u_multisignatures.sql'),
-		columnRank: link('accounts/column_rank.sql'),
 		convertToNonVirgin: link('accounts/convert_to_non_virgin.sql'),
 	},
 	blocks: {
@@ -113,6 +112,7 @@ module.exports = {
 		),
 		insertRoundRewards: link('rounds/insert_round_rewards.sql'),
 		deleteRoundRewards: link('rounds/delete_round_rewards.sql'),
+		updateDelegatesRanking: link('rounds/update_delegates_ranking.sql'),
 	},
 	transactions: {
 		count: link('transactions/count.sql'),

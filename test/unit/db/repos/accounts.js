@@ -77,7 +77,7 @@ describe('db', () => {
 				expect(db.accounts.dbTable).to.be.eql('mem_accounts');
 
 				expect(db.accounts.dbFields).to.an('array');
-				expect(db.accounts.dbFields).to.have.lengthOf(30);
+				expect(db.accounts.dbFields).to.have.lengthOf(29);
 
 				expect(db.accounts.cs).to.an('object');
 				expect(db.accounts.cs).to.not.empty;
@@ -382,7 +382,6 @@ describe('db', () => {
 				return db.accounts.upsert(account, 'address').then(() => {
 					return db.accounts.list({ address: account.address }).then(result => {
 						expect(result.length).to.be.eql(1);
-						expect(account).to.be.eql(_.omit(result[0], 'rank'));
 					});
 				});
 			});
@@ -516,8 +515,6 @@ describe('db', () => {
 							.list({ username: updatedAccount.username })
 							.then(result => {
 								expect(result.length).to.eql(1);
-
-								expect(_.omit(result[0], 'rank')).to.eql(updatedAccount);
 							});
 					});
 				});
@@ -857,22 +854,6 @@ describe('db', () => {
 				});
 
 				describe('dynamic fields', () => {
-					it('should fetch "rank" based on query \'(SELECT m.row_number FROM (SELECT row_number() OVER (ORDER BY r."vote" DESC, r."publicKey" ASC), address FROM (SELECT d."isDelegate", d.vote, d."publicKey", d.address FROM mem_accounts AS d WHERE d."isDelegate" = 1) AS r) m WHERE m."address" = "mem_accounts"."address")::int\'', () => {
-						let actualResult;
-
-						return db.accounts.list({}, ['rank']).then(data => {
-							actualResult = data;
-
-							return db
-								.query(
-									'SELECT (SELECT m.row_number FROM (SELECT row_number() OVER (ORDER BY r."vote" DESC, r."publicKey" ASC), address FROM (SELECT d."isDelegate", d.vote, d."publicKey", d.address FROM mem_accounts AS d WHERE d."isDelegate" = 1) AS r) m WHERE m."address" = "mem_accounts"."address")::bigint AS rank FROM mem_accounts'
-								)
-								.then(result => {
-									expect(actualResult).to.eql(result);
-								});
-						});
-					});
-
 					it('should fetch "delegates" based on query (SELECT ARRAY_AGG("dependentId") FROM mem_accounts2delegates WHERE "accountId" = "mem_accounts"."address")', () => {
 						return db.accounts.list({}, ['address', 'delegates']).then(data => {
 							return Promise.map(data, account => {
@@ -997,9 +978,9 @@ describe('db', () => {
 							});
 					});
 
-					it('should return "rate" as "bigint"', () => {
-						return db.accounts.list({}, ['rate'], { limit: 1 }).then(data => {
-							expect(data[0].rate).to.be.a('string');
+					it('should return "rank" as "bigint"', () => {
+						return db.accounts.list({}, ['rank'], { limit: 1 }).then(data => {
+							expect(data[0].rank).to.be.a('string');
 						});
 					});
 

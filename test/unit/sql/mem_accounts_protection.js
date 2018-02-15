@@ -44,7 +44,7 @@ var validAccount = {
 	balance: '0',
 	u_balance: '0',
 	vote: '10000000000000000',
-	rate: '0',
+	rank: '0',
 	delegates: null,
 	u_delegates: null,
 	multisignatures: null,

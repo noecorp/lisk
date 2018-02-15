@@ -2356,9 +2356,6 @@ definitions:
       missedBlocks:
         type: integer
         example: 427
-      rate:
-        type: integer
-        example: 91
       approval:
         type: number
         example: 14.22
@@ -2392,9 +2389,6 @@ definitions:
       missedBlocks:
         type: integer
         example: 427
-      rate:
-        type: integer
-        example: 91
       approval:
         type: number
         example: 14.22

@@ -31,7 +31,7 @@ var validAccount = {
 	publicKey: 'addb0e15a44b0fdc6ff291be28d8c98f5551d0cd9218d749e30ddb87c6e31ca9',
 	secondPublicKey: null,
 	vote: '9820020609280331',
-	rate: '0',
+	rank: '0',
 	delegates: null,
 	u_delegates: null,
 	multisignatures: null,
