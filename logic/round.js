@@ -163,6 +163,16 @@ Round.prototype.updateVotes = function() {
 };
 
 /**
+ * Calls sql updateDelegatesRanking:
+ * - Update rank column from accounts which are delegates.
+ *
+ * @todo Add @returns tag
+ */
+Round.prototype.updateDelegatesRanking = function() {
+	return (this.t || this.scope.library.db).rounds.updateDelegatesRanking();
+};
+
+/**
  * For backwards option calls sql updateBlockId with newID: 0.
  *
  * @returns {function} Promise
@@ -408,6 +418,7 @@ Round.prototype.land = function() {
 		.then(this.applyRound.bind(this))
 		.then(this.updateVotes.bind(this))
 		.then(this.flushRound.bind(this))
+		.then(this.updateDelegatesRanking.bind(this))
 		.then(() => this.t);
 };
 
@@ -434,6 +445,7 @@ Round.prototype.backwardLand = function() {
 		.then(this.restoreRoundSnapshot.bind(this))
 		.then(this.restoreVotesSnapshot.bind(this))
 		.then(this.deleteRoundRewards.bind(this))
+		.then(this.updateDelegatesRanking.bind(this))
 		.then(() => this.t);
 };
 

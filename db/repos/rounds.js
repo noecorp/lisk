@@ -281,6 +281,18 @@ class RoundsRepository {
 			round,
 		});
 	}
+
+	/**
+	 * Update rank column from accounts which are delegates
+	 *
+	 * @param {Number} round - Round number
+	 * @return {Promise}
+	 */
+	updateDelegatesRanking(round) {
+		return this.db.none(sql.updateDelegatesRanking, {
+			round,
+		});
+	}
 }
 
 module.exports = RoundsRepository;
