@@ -551,28 +551,38 @@ Transport.prototype.shared = {
 	 */
 	postBlock(query, cb) {
 		query = query || {};
-		var block;
-		try {
-			if (query.block) {
-				query.block = bson.deserialize(Buffer.from(query.block));
-				block = modules.blocks.verify.addBlockProperties(query.block);
+		library.schema.validate(query, definitions.WSBlockBroadcast, err => {
+			if (err || !query.block.base64) {
+				return library.logger.debug(
+					'Received post block broadcast request in unexpected format',
+					{
+						err: err.toString(),
+						module: 'transport',
+						query,
+					}
+				);
 			}
-			block = library.logic.block.objectNormalize(block);
-		} catch (e) {
-			library.logger.debug('Block normalization failed', {
-				err: e.toString(),
-				module: 'transport',
-				block: query.block,
-			});
+			let block;
+			try {
+				query.block = bson.deserialize(Buffer.from(query.block.data, 'base64'));
+				block = modules.blocks.verify.addBlockProperties(query.block);
+				block = library.logic.block.objectNormalize(block);
+			} catch (e) {
+				library.logger.debug('Block normalization failed', {
+					err: e.toString(),
+					module: 'transport',
+					block: query.block,
+				});
 
-			__private.removePeer({ peer: query.peer, code: 'EBLOCK' });
+				__private.removePeer({ peer: query.peer, code: 'EBLOCK' });
 
-			return setImmediate(cb, e.toString());
-		}
+				return setImmediate(cb, e.toString());
+			}
 
-		library.bus.message('receiveBlock', block);
+			library.bus.message('receiveBlock', block);
 
-		return setImmediate(cb, null, { success: true, blockId: block.id });
+			return setImmediate(cb, null, { success: true, blockId: block.id });
+		});
 	},
 
 	/**
